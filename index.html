@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 
+  <meta charset="utf-8">
+
+ 
+  <meta name="description" 
+        content="CoreaSpeech: Korean Speech Corpus via JAMO-based Coreset Selection for Efficient and Robust Korean Speech Generation"> 
+
+ 
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <title>CoreaSpeech: Korean Speech Corpus via JAMO-based Coreset Selection for Efficient and Robust Korean Speech Generation</title> 
+
+  
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body" style="padding-bottom: 24px;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          
+          <h1 class="title is-1 publication-title">
+            CoreaSpeech: Korean Speech Corpus via JAMO-based Coreset Selection for Efficient and Robust Korean Speech Generation
+          </h1>
+
+         
+          <div class="is-size-4 publication-authors"> 
+            <span class="author-block">Anonymous</span>
+          </div>  
+
+          <div class="column has-text-centered">
+            <div class="publication-links"> 
+              <span class="link-block">
+               
+                <a href=""
+                   class="external-link button is-normal is-rounded is-info">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>Source Code (TBA) </span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> 
+<div style="height: 10px;"></div>
+
+<section class="section" style="padding-top: 0px;">
+    <div class="container is-max-desktop"> 
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          
+          <h2 class="title is-3">Abstract</h2>
+          <div class="content has-text-justified">
+            <p> 
+              While substantial advances have been achieved in TTS for languages such as English and Mandarin, Korean remains comparatively underrepresented due to the lack of rigorous preprocessing methods, systematically constructed datasets, a shortage of standardized Korean TTS benchmarks, and explicitly optimized models for Korean.
+To address these limitations, we propose a Korean-tailored data-refinement and coreset selection pipeline.
+It refines speech and performs textual normalization Bigram especially for numerals and English terms, followed by a novel coreset selection strategy that leverages Jamo-based linguistic and phonological features unique to Korean.
+As a result, we release CoreaSpeech, an efficient and robust Korean speech corpus comprising 700 hours over 21,449 speakers.
+This refined core subset, evenly balanced across utterances ranging from 0 to 30 seconds, is derived from 2,058 hours of widely used Korean datasets.
+Building on this, we conducted extensive experiments via cross-lingual fine-tuning with our CoreaSpeech dataset.
+Furthermore, we introduce a new universal Korean TTS benchmark dataset including clean, noisy, and numeric subsets.
+Additionally, we demonstrate that our Korean-specific text normalization serves as a plug-and-play module, reliably improving performance regardless of underlying TTS architecture.
+We publicly release our dataset, pipeline code, and evaluation benchmarks to support reproducible research and further advances in Korean and multilingual speech synthesis
+          </div> 
+        </div>
+      </div>  
+    </div>
+</section> 
+
+
+
+</body>
+</html>
