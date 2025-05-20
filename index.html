@@ -103,14 +103,13 @@
           <div class="content has-text-justified">
             <p> 
               While substantial advances have been achieved in TTS for languages such as English and Mandarin, Korean remains comparatively underrepresented due to the lack of rigorous preprocessing methods, systematically constructed datasets, a shortage of standardized Korean TTS benchmarks, and explicitly optimized models for Korean.
-To address these limitations, we propose a Korean-tailored data-refinement and coreset selection pipeline.
-It refines speech and performs textual normalization Bigram especially for numerals and English terms, followed by a novel coreset selection strategy that leverages Jamo-based linguistic and phonological features unique to Korean.
-As a result, we release CoreaSpeech, an efficient and robust Korean speech corpus comprising 700 hours over 21,449 speakers.
+To address these limitations, we propose a Korean-tailored data-refinement and coreset selection pipeline. It refines speech data and performs textual normalization especially for numerals and English terms, followed by a novel coreset selection strategy that leverages Jamo-based linguistic and phonological features unique to Korean.
+As a result, we release CoreaSpeech, an efficient and robust Korean speech corpus comprising 700 hours across 21,449 speakers.
 This refined core subset, evenly balanced across utterances ranging from 0 to 30 seconds, is derived from 2,058 hours of widely used Korean datasets.
 Building on this, we conducted extensive experiments via cross-lingual fine-tuning with our CoreaSpeech dataset.
 Furthermore, we introduce a new universal Korean TTS benchmark dataset including clean, noisy, and numeric subsets.
-Additionally, we demonstrate that our Korean-specific text normalization serves as a plug-and-play module, reliably improving performance regardless of underlying TTS architecture.
-We publicly release our dataset, pipeline code, and evaluation benchmarks to support reproducible research and further advances in Korean and multilingual speech synthesis
+Additionally, we demonstrate that our Korean-specific text normalization serves as a plug-and-play module, reliably improving performance regardless of the underlying TTS architecture.
+We publicly release our dataset, pipeline code, and evaluation benchmarks to support reproducible research and further advances in Korean and multilingual speech synthesis.
           </div> 
         </div>
       </div>  
