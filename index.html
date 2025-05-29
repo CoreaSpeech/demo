@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 
+  <meta charset="utf-8">
+
+ 
+  <meta name="description" 
+        content="CoreaSpeech: Korean Speech Corpus via JAMO-based Coreset Selection for Efficient and Robust Korean Speech Generation"> 
+
+ 
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <title>CoreaSpeech: Korean Speech Corpus via JAMO-based Coreset Selection for Efficient and Robust Korean Speech Generation</title> 
+
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --secondary-color: #059669;
+      --accent-color: #f59e0b;
+      --text-color: #1f2937;
+      --text-light: #6b7280;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --border-color: #e5e7eb;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      color: var(--text-color);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%);
+      color: var(--text-color);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.1);
+      z-index: 1;
+    }
+
+    .hero .hero-body {
+      position: relative;
+      z-index: 2;
+      padding: 4rem 1.5rem;
+    }
+
+    .publication-title {
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1.5rem;
+      color: var(--text-color);
+    }
+
+    .publication-authors {
+      margin-bottom: 2rem;
+      opacity: 0.8;
+    }
+
+    .button {
+      font-weight: 500;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      border: none;
+      box-shadow: var(--shadow-sm);
+      margin: 0.25rem;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .button.is-info {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .button.is-info:hover {
+      background: #1d4ed8;
+    }
+
+    .hf-button {
+      background: linear-gradient(135deg, #ff9a00 0%, #ffad33 100%);
+      color: white;
+      border: none;
+    }
+
+    .hf-button:hover {
+      background: linear-gradient(135deg, #e68900 0%, #ff9a00 100%);
+      color: white;
+    }
+
+    .section {
+      background: var(--card-bg);
+      margin: 4rem auto;
+      border-radius: 16px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-color);
+      position: relative;
+      overflow: hidden;
+      max-width: 1500px !important;
+      width: 100% !important;
+    }
+
+    .section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    }
+
+    .section-divider {
+      margin: 3rem 0;
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+    }
+
+    .title {
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      color: var(--text-color);
+    }
+
+    .title.is-3 {
+      position: relative;
+      padding-bottom: 1rem;
+    }
+
+    .title.is-3::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      border-radius: 2px;
+    }
+
+    .stats-table {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    .stats-table th {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      font-weight: 600;
+      color: var(--text-color);
+      border: none;
+      padding: 1rem;
+    }
+
+    .stats-table td {
+      padding: 1rem;
+      border-color: var(--border-color);
+      vertical-align: middle;
+    }
+
+    .stats-table tbody tr:hover {
+      background-color: #f8fafc;
+      transition: background-color 0.2s ease;
+    }
+
+    .demo-table {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-color);
+      margin: 2rem 0;
+      width: 100%;
+      table-layout: fixed;
+      overflow-x: auto;
+    }
+
+    .demo-table th {
+      background: #f8fafc;
+      color: var(--text-color);
+      font-weight: 600;
+      padding: 0.5rem 0.25rem;
+      border: none;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      border-right: 1px solid var(--border-color);
+    }
+
+    .demo-table th:last-child {
+      border-right: none;
+    }
+
+    .demo-table td {
+      padding: 0.5rem 0.25rem;
+      border-color: var(--border-color);
+      vertical-align: middle;
+      font-size: 0.75rem;
+    }
+
+    .demo-table tbody tr:hover {
+      background-color: #f8fafc;
+      transition: background-color 0.2s ease;
+    }
+
+    .demo-table audio {
+      width: 100px;
+      height: 28px;
+      border-radius: 4px;
+      max-width: 100%;
+    }
+
+    .demo-table th:nth-child(1), .demo-table td:nth-child(1) {
+      width: 10%;
+    }
+    .demo-table th:nth-child(2), .demo-table td:nth-child(2) {
+      width: 30%;
+      word-wrap: break-word;
+    }
+    .demo-table th:nth-child(3), .demo-table td:nth-child(3),
+    .demo-table th:nth-child(4), .demo-table td:nth-child(4),
+    .demo-table th:nth-child(5), .demo-table td:nth-child(5),
+    .demo-table th:nth-child(6), .demo-table td:nth-child(6),
+    .demo-table th:nth-child(7), .demo-table td:nth-child(7),
+    .demo-table th:nth-child(8), .demo-table td:nth-child(8) {
+      width: 10%;
+    }
+
+    .utmos-table th:nth-child(1), .utmos-table td:nth-child(1) {
+      width: 40%;
+      word-wrap: break-word;
+    }
+    .utmos-table th:nth-child(2), .utmos-table td:nth-child(2) {
+      width: 25%;
+    }
+    .utmos-table th:nth-child(3), .utmos-table td:nth-child(3) {
+      width: 15%;
+    }
+    .utmos-table th:nth-child(4), .utmos-table td:nth-child(4) {
+      width: 20%;
+    }
+
+    .status-selected {
+      color: #16a34a !important;
+      font-weight: 700 !important;
+      background-color: #f0fdf4 !important;
+      padding: 0.25rem 0.5rem !important;
+      border-radius: 4px !important;
+    }
+
+    .status-filtered {
+      color: #dc2626 !important;
+      font-weight: 700 !important;
+      background-color: #fef2f2 !important;
+      padding: 0.25rem 0.5rem !important;
+      border-radius: 4px !important;
+    }
+
+    @media (max-width: 1400px) {
+      .demo-table audio {
+        width: 90px;
+        height: 26px;
+      }
+      .demo-table th, .demo-table td {
+        padding: 0.4rem 0.2rem;
+        font-size: 0.75rem;
+      }
+    }
+
+    @media (max-width: 1200px) {
+      .demo-table audio {
+        width: 80px;
+        height: 24px;
+      }
+      .demo-table th, .demo-table td {
+        padding: 0.3rem 0.15rem;
+        font-size: 0.7rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .demo-table {
+        overflow-x: scroll;
+      }
+      .demo-table audio {
+        width: 70px;
+        height: 22px;
+      }
+      .demo-table th, .demo-table td {
+        padding: 0.25rem 0.1rem;
+        font-size: 0.65rem;
+      }
+    }
+
+    .demo-table th:nth-child(11), .demo-table td:nth-child(11) {
+      color: #3b82f6 !important;
+    }
+
+    .demo-table th:nth-child(11) {
+      font-weight: 700;
+    }
+
+    .lncat-table th:nth-child(1), .lncat-table td:nth-child(1) { /* Text */
+      width: 30%;
+      word-wrap: break-word;
+    }
+    .lncat-table th:nth-child(2), .lncat-table td:nth-child(2) { /* Audio Sample */
+      width: 20%;
+    }
+    .lncat-table th:nth-child(3), .lncat-table td:nth-child(3) { /* Category / Reason */
+      width: 35%;
+      word-wrap: break-word;
+    }
+    .lncat-table th:nth-child(4), .lncat-table td:nth-child(4) { /* Status */
+      width: 15%;
+    }
+
+    /* Audio Diarization Table - matched to LNCat Text & Audio Sample */
+    .diarization-pipeline-table th:nth-child(1), .diarization-pipeline-table td:nth-child(1) { /* Text */
+      width: 30%;
+      word-wrap: break-word;
+    }
+    .diarization-pipeline-table th:nth-child(2), .diarization-pipeline-table td:nth-child(2) { /* Audio Sample */
+      width: 20%;
+    }
+    .diarization-pipeline-table th:nth-child(3), .diarization-pipeline-table td:nth-child(3) { /* Detected Speaker Count */
+      width: 25%; 
+    }
+    .diarization-pipeline-table th:nth-child(4), .diarization-pipeline-table td:nth-child(4) { /* Status */
+      width: 25%;
+    }
+
+    /* UTMOS Table - matched to LNCat Text & Audio Sample */
+    /* Note: .utmos-pipeline-table is added to the existing .utmos-table */
+    /* These rules will apply specifically due to the added class */
+    .utmos-pipeline-table th:nth-child(1), .utmos-pipeline-table td:nth-child(1) { /* Text */
+      width: 30% !important; /* Use !important to ensure override if .utmos-table had conflicting specifics */
+      word-wrap: break-word;
+    }
+    .utmos-pipeline-table th:nth-child(2), .utmos-pipeline-table td:nth-child(2) { /* Audio Sample */
+      width: 20% !important;
+    }
+    .utmos-pipeline-table th:nth-child(3), .utmos-pipeline-table td:nth-child(3) { /* UTMOS Score */
+      width: 25% !important; 
+    }
+    .utmos-pipeline-table th:nth-child(4), .utmos-pipeline-table td:nth-child(4) { /* Status */
+      width: 25% !important;
+    }
+
+    .pipeline-image, .model-image {
+      border-radius: 16px;
+      transition: all 0.3s ease;
+      border: 1px solid var(--border-color);
+      max-width: 80%;
+      height: auto;
+      margin: 1rem 0 0.5rem 0;
+    }
+
+    .pipeline-image + p, .model-image + p {
+      margin-top: 0.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .content p {
+      color: var(--text-color);
+      margin-bottom: 1.5rem;
+    }
+
+    .content ul li {
+      margin-bottom: 0.5rem;
+    }
+
+    .content strong {
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    .hf-icon {
+      width: 24px;
+      height: 24px;
+      vertical-align: middle;
+      filter: brightness(1.1);
+    }
+
+    footer {
+      background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
+      color: white;
+      margin-top: 4rem;
+      border-radius: 16px 16px 0 0;
+    }
+
+    .section, .button, .pipeline-image, .model-image {
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .pipeline-image, .model-image {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+    }
+
+    .pipeline-image[src], .model-image[src] {
+      background: none;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .container, 
+    .container.is-max-desktop,
+    .container.is-max-widescreen {
+      max-width: 1500px !important;
+      width: 100% !important;
+      margin: 0 auto !important;
+      padding: 0 1rem !important;
+    }
+
+    .hero .container {
+      max-width: 1500px !important;
+    }
+
+    .columns {
+      max-width: 1500px !important;
+      margin: 0 auto !important;
+    }
+
+    .column.is-full {
+      max-width: 1500px !important;
+    }
+
+    /* Style for PEFT-TTS (Ours) header in Korean Universal Testset Samples table */
+    .section:nth-child(6) .demo-table th:nth-child(4) {
+      color: #3b82f6 !important; /* Blue color */
+      font-weight: 700; /* Bold */
+    }
+
+    /* Style for PEFT-TTS (Ours) header in Korean Universal Testset Clean Data Samples table */
+    #korean-universal-testset-clean-table th:nth-child(4) {
+      color: #3b82f6 !important; /* Blue color */
+      font-weight: 700 !important; /* Bold */
+    }
+
+    /* Style for PEFT-TTS (Ours) header in Korean Universal Testset tables */
+    #korean-universal-testset-clean-table th:nth-child(4),
+    #korean-universal-testset-noisy-table th:nth-child(4),
+    #korean-universal-testset-numeric-table th:nth-child(4) {
+      color: #3b82f6 !important; /* Blue color */
+      font-weight: 700 !important; /* Bold */
+    }
+  </style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">
+            CoreaSpeech: Korean Speech Corpus via JAMO-based Coreset Selection for Efficient and Robust Korean Speech Generation
+          </h1>
+         
+          <div class="is-size-4 publication-authors"> 
+            <span class="author-block">Anonymous</span>
+          </div>  
+
+          <div class="has-text-centered">
+            <div class="publication-links"> 
+                <a href="https://github.com/CoreaSpeech/sourcecode"
+                 class="button is-info is-rounded">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                <span>Source Code (TBA)</span>
+              </a>
+              
+              <a href="https://huggingface.co/datasets/aanonyyy/F5I9N7A1"
+                 class="button is-rounded hf-button" target="_blank" rel="noopener">
+                  <span class="icon">
+                  <img src="https://huggingface.co/datasets/huggingface/brand-assets/resolve/main/hf-logo.svg"
+                          alt="Hugging Face" class="hf-icon">
+                  </span>
+                  <span>CoreaSpeech Dataset</span>
+                </a>
+
+              <a href="https://huggingface.co/datasets/aanonyyy/M6A5P1Q7"
+                 class="button is-rounded hf-button" target="_blank" rel="noopener">
+                  <span class="icon">
+                  <img src="https://huggingface.co/datasets/huggingface/brand-assets/resolve/main/hf-logo.svg"
+                          alt="Hugging Face" class="hf-icon">
+                  </span>
+                  <span>Korean Universal Benchmark</span>
+               </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> 
+
+<div class="container is-max-desktop" style="padding: 0 2rem;">
+
+<section class="section">
+  <div class="columns is-centered has-text-centered">
+    <div class="column is-full">
+      <h2 class="title is-3">Abstract</h2>
+      <div class="content has-text-justified">
+        <p> 
+          While substantial advances have been achieved in TTS for languages such as English and Mandarin, Korean remains comparatively underrepresented due to the lack of rigorous preprocessing methods, systematically constructed datasets, a shortage of standardized Korean TTS benchmarks, and explicitly optimized models for Korean.
+          To address these limitations, we propose a Korean-tailored data-refinement and coreset selection pipeline. It refines speech data and performs textual normalization especially for numerals and English terms, followed by a novel coreset selection strategy that leverages Jamo-based linguistic and phonological features unique to Korean.
+          As a result, we release CoreaSpeech, an efficient and robust Korean speech corpus comprising 700 hours across 21,449 speakers.
+          This refined core subset, evenly balanced across utterances ranging from 0 to 30 seconds, is derived from 2,058 hours of widely used Korean datasets.
+          Building on this, we conducted extensive experiments via cross-lingual fine-tuning with our CoreaSpeech dataset.
+          Furthermore, we introduce a new universal Korean TTS benchmark dataset including clean, noisy, and numeric subsets.
+          Additionally, we demonstrate that our Korean-specific text normalization serves as a plug-and-play module, reliably improving performance regardless of the underlying TTS architecture.
+          We publicly release our dataset, pipeline code, and evaluation benchmarks to support reproducible research and further advances in Korean and multilingual speech synthesis.
+        </p>
+      </div> 
+    </div>
+  </div>  
+</section>
+
+<div class="section-divider"></div>
+
+<section class="section">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <h2 class="title is-3 has-text-centered">The CoreaSpeech Dataset</h2>
+        
+        <h3 class="title is-4">Overview</h3>
+        <div class="content has-text-justified">
+          <p>
+            CoreaSpeech is an efficient and robust Korean speech corpus comprising 700 hours across 21,449 speakers. 
+            This refined core subset, evenly balanced across utterances ranging from 0 to 30 seconds, is derived from 
+            2,058 hours of widely used Korean datasets.
+          </p>
+        </div>
+
+        <h3 class="title is-4">Dataset Statistics</h3>
+        <div class="table-container">
+          <table class="table is-bordered is-narrow is-hoverable is-fullwidth stats-table">
+            <thead>
+              <tr>
+                <th>Corpus</th>
+                <th>Hours</th>
+                <th>Samples</th>
+                <th>Speakers</th>
+                <th>Language</th>
+                <th>License</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>CoreaSpeech (Ours)</strong></td>
+                <td>700</td>
+                <td>168,790</td>
+                <td>21,449</td>
+                <td>Korean</td>
+                <td>CC BY-NC 4.0</td>
+              </tr>
+              <tr>
+                <td>KSS</td>
+                <td>12</td>
+                <td>12,853</td>
+                <td>1</td>
+                <td>Korean</td>
+                <td>CC BY-NC-SA 4.0</td>
+              </tr>
+              <tr>
+                <td>Emilia (KO)</td>
+                <td>213</td>
+                <td>91,065</td>
+                <td>27,171</td>
+                <td>Korean</td>
+                <td>CC BY-NC 4.0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="title is-4">Duration Appending</h3>
+        <div class="has-text-centered">
+          <img src="./sample/images/durantion_appending.png" alt="Duration Appending Chart" class="pipeline-image">
+          <p class="is-size-6 has-text-grey">Comparison of utterance duration distribution before and after data appending.</p>
+        </div>
+
+        <h3 class="title is-4">Semantic & Acoustic Diversity</h3>
+        <div class="has-text-centered">
+          <img src="./sample/images/Semantic_pca.png" alt="Semantic PCA" class="pipeline-image">
+          <p class="is-size-6 has-text-grey">Semantic PCA with frequency and projection (Raw, Core, Core-appended).</p>
+        </div>
+        <div class="has-text-centered">
+          <img src="./sample/images/Acoustic_pca.png" alt="Acoustic PCA" class="pipeline-image">
+          <p class="is-size-6 has-text-grey">Acoustic PCA with frequency and projection (Raw, Core, Core-appended).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<section class="section">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <h2 class="title is-3 has-text-centered">CoreaSpeech Pipeline</h2>
+        
+        <div class="content has-text-justified">
+          <p>
+            The CoreaSpeech pipeline is designed to construct a high-fidelity Korean speech corpus. The overview of the proposed 
+            pipeline is shown below.
+          </p>
+        </div>
+
+        <div class="has-text-centered">
+          <img src="./sample/images/Coreaspeech_pipeline.png" alt="CoreaSpeech Pipeline Overview" class="pipeline-image">
+          <p class="is-size-6 has-text-grey has-text-centered" style="margin-top: 0.5rem; margin-bottom: 2rem;">Overview of the CoreaSpeech data processing pipeline.</p>
+        </div>
+
+        <h3 class="title is-4">Key Stages</h3>
+        <div class="content">
+          <ul>
+            <li>
+              <strong>Data Conditioning:</strong>
+              <ul>
+                <li>Audio Diarization: Employs pyannote/speaker-diarization-3.1 to ensure single-speaker segments.</li>
+                <li>Text Categorizing (LNCat): Selectively retains utterances based on convertibility into Korean graphemes.</li>
+                <li>Text Normalization (N2gk+): Automatic normalization for numerals, English tokens, and special characters to natural Korean pronunciations.</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Coreset Selection:</strong>
+              <ul>
+                <li>Jamo Bigram (Grapheme level): Considers pairwise Jamo adjacency to capture phonetic patterns and interactions. Uses probabilistic filtration for over-represented pairs.</li>
+                <li>Dynamic UTMOS threshold (Audio quality level): Refines sample selection based on audio quality, using dataset-specific dynamic thresholds.</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Supplementary Finalization:</strong>
+              <ul>
+                <li>Data Appending for duration balancing: Concatenates short segments from the same speaker to create longer utterances, balancing sample durations up to 30 seconds.</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <hr class="is-divider" style="margin-top: 2.5rem; margin-bottom: 2.5rem;">
+
+        <h3 class="title is-4 has-text-centered" style="margin-bottom: 1.5rem;">Pipeline Stage Audio Examples</h3>
+        
+        <!-- Audio Diarization Samples Section -->
+        <div>
+          <h5 class="subtitle is-5" style="margin-top: 1.5rem; margin-bottom: 1rem;"><strong>Audio Diarization Samples</strong></h5>
+          <div class="table-container" style="margin-bottom: 1.5rem;">
+            <table class="table is-bordered is-narrow is-hoverable is-fullwidth demo-table diarization-pipeline-table">
+              <thead>
+                <tr>
+                  <th>Text</th>
+                  <th>Audio Sample</th>
+                  <th>Detected Speaker Count</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>시간이 있을 때 낚시하러 자주가요.</td>
+                  <td><audio controls src="sample/audio/Speaker Diarization/only_1_speaker/KO_B00000_S03161_W000004.mp3"></audio></td>
+                  <td>1</td>
+                  <td><span class="status-selected">✓ Selected</span></td>
+                </tr>
+                <tr>
+                  <td>저 하라고요? 유리? 유리 유리 유리 유리. 아 하고싶어요. 자 하나 둘 셋, 배고픔!</td>
+                  <td><audio controls src="sample/audio/Speaker Diarization/over_1_speaker/KO_B00000_S01854_W000023.mp3"></audio></td>
+                  <td>2</td>
+                  <td><span class="status-filtered">✗ Filtered</span></td>
+                </tr>
+                <tr>
+                  <td>저는 아 사실 그, 많은 애들은 제가 좋아하고. 네. 예. 최근들어서 노래방을 최근에 가본적이 좀 없기 때문에. 그쵸, 에, 네. 노래방 텐션업이라고 하니까 쫌 그렇긴 한데. 제가 일단 어 참을 수 없는 노래들이 좀 있죠.</td>
+                  <td><audio controls src="sample/audio/Speaker Diarization/over_1_speaker/KO_B00000_S01102_W000032.mp3"></audio></td>
+                  <td>5</td>
+                  <td><span class="status-filtered">✗ Filtered</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Text Categorizing (LNCat) Samples Section -->
+        <div>
+          <h5 class="subtitle is-5" style="margin-top: 2rem; margin-bottom: 1rem;"><strong>Text Categorizing (LNCat) Samples</strong></h5>
+
+          <!-- Korean Grapheme Identification Sub-section -->
+          <div>
+            <h6 class="subtitle is-6" style="margin-top: 1.5rem; margin-bottom: 0.75rem;"><strong>Korean Grapheme Identification</strong></h6>
+            <div class="table-container" style="margin-bottom: 1.5rem;">
+              <table class="table is-bordered is-narrow is-hoverable is-fullwidth demo-table lncat-table">
+                <thead>
+                  <tr>
+                    <th>Text</th>
+                    <th>Audio Sample</th>
+                    <th>Category / Reason</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>봄이야, 봄에는 게임이지. 우리 다같이 게임하자.</td>
+                    <td><audio controls src="sample/audio/LNCat/ko_or_not/ko/A-H1-A-026-0442.wav"></audio></td>
+                    <td>Korean Graphemes</td>
+                    <td><span class="status-selected">✓ Selected</span></td>
+                  </tr>
+                  <tr>
+                    <td>A further $100,000 fine was specifically for Mr. Howden for breaching directors duties.</td>
+                    <td><audio controls src="sample/audio/LNCat/ko_or_not/not_ko/KO_B00000_S00000_W000000.mp3"></audio></td>
+                    <td>Not Korean Graphemes (English)</td>
+                    <td><span class="status-filtered">✗ Filtered</span></td>
+                  </tr>
+                  <tr>
+                    <td>오늘 영상에서 留后路 여지를 남기다 라는 표현이 나왔어요. 어떤 일을 할 때, 누구는 州安顺처럼 여지를 남기지 말아야 죽기살기로 하게 되어 성공할 수 있다고 합니다. 또 어떤 경우는 州安顺의 부인, 印花의 말처럼 다 망해도 돌아갈 여지를 남겨두어야 한다고 하죠. 저는 후자의 입장이지만 무엇이 맞는 것인지 모르겠습니다. 아무튼 저는 州安顺이 조금 걱정되네요.</td>
+                    <td><audio controls src="sample/audio/LNCat/ko_or_not/not_ko/KO_B00000_S00189_W000042.mp3"></audio></td>
+                    <td>Contains Non-Korean Characters (Chinese)</td>
+                    <td><span class="status-filtered">✗ Filtered</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- English Token Convertibility Sub-section -->
+          <div>
+            <h6 class="subtitle is-6" style="margin-top: 1.5rem; margin-bottom: 0.75rem;"><strong>English Token Convertibility</strong></h6>
+            <div class="table-container" style="margin-bottom: 1.5rem;">
+              <table class="table is-bordered is-narrow is-hoverable is-fullwidth demo-table lncat-table">
+                <thead>
+                  <tr>
+                    <th>Text</th>
+                    <th>Audio Sample</th>
+                    <th>Category / Reason</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>이게 또 어떻게 봐야 될지. 그리고 또, 최근에 트론들이 또 엄청 핫하잖아요, LCK 같은 경우에는.</td>
+                    <td><audio controls src="sample/audio/LNCat/en_convertable/en_convertable_true/KO_B00000_S05019_W000009.mp3"></audio></td>
+                    <td>Convertible English Token ('LCK')</td>
+                    <td><span class="status-selected">✓ Selected</span></td>
+                  </tr>
+                  <tr>
+                    <td>Texture Operator에 있는 Render를 같이 불러오도록 하겠습니다.</td>
+                    <td><audio controls src="sample/audio/LNCat/en_convertable/en_convertable_false/KO_B00000_S02292_W000050.mp3"></audio></td>
+                    <td>Non-Convertible English Token ('exture Operator', 'Render')</td>
+                    <td><span class="status-filtered">✗ Filtered</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <!-- UTMOS-based Audio Quality Filtering Section -->
+        <div style="margin-top: 2rem;">
+            <h5 class="subtitle is-5" style="margin-bottom: 1rem;"><strong>Dynamic UTMOS-based Audio Quality Filtering</strong></h5>
+            <div class="table-container">
+              <table class="table is-bordered is-narrow is-hoverable is-fullwidth demo-table utmos-table utmos-pipeline-table">
+                <thead>
+                  <tr>
+                    <th>Text</th>
+                    <th>Audio Sample</th>
+                    <th>UTMOS Score</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>아프리카의 밝고 따뜻한 분위기가 좋았어요.</td>
+                    <td><audio controls><source src="sample/audio/UTMOS/UT_clean/0036_G1A4E2S0C0_BJS_000195.wav" type="audio/wav">Your browser does not support the audio element.</audio></td>
+                    <td>4.21</td>
+                    <td><span class="status-selected">✓ Selected</span></td>
+                  </tr>
+                  <tr>
+                    <td>나에게는 다 소용이 없다.</td>
+                    <td><audio controls><source src="sample/audio/UTMOS/UT_filtered/0036_G1A4E2S0C0_BJS_000195.wav" type="audio/wav">Your browser does not support the audio element.</audio></td>
+                    <td>1.35</td>
+                    <td><span class="status-filtered">✗ Filtered</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<section class="section">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <h2 class="title is-3 has-text-centered">Model: PEFT-TTS</h2>
+        
+        <div class="content has-text-justified">
+          <p>
+            To evaluate the CoreaSpeech dataset, we utilize F5-TTS as the base model and apply Parameter-Efficient 
+            Fine-Tuning (PEFT) to create PEFT-TTS, a model optimized for Korean speech synthesis. 
+          </p>
+        </div>
+
+        <div class="has-text-centered">
+          <img src="./sample/images/PEFT_TTS_model.png" alt="PEFT-TTS Model Overview" class="model-image">
+          <p class="is-size-6 has-text-grey has-text-centered" style="margin-top: 0.5rem; margin-bottom: 2rem;">Overview of the PEFT-TTS model architecture.</p>
+        </div>
+
+        <div class="content has-text-justified">
+          <p>
+            PEFT-TTS applies cross-lingual PEFT to the F5-TTS model. Full fine-tuning is applied to text embedding 
+            and ConvNeXt V2 modules. LoRA adapters are used for remaining modules, specialized for the CoreaSpeech 
+            dataset. Key components include:
+          </p>
+          <ul>
+            <li><strong>Prompt Adapter:</strong> LoRA (rank=64) is applied to the linear projection layer, fine-tuned with DropPath.</li>
+            <li><strong>DiT LoRA Adapter:</strong> LoRA (rank=16) is applied to the self-attention layer of the DiT block.</li>
+          </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<section class="section">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <h2 class="title is-3 has-text-centered">Korean Universal Testset Samples</h2>
+        
+        <div class="content has-text-justified">
+          <p>
+            This section presents synthesized speech samples from our PEFT-TTS model (trained on CoreaSpeech), available for comparison with Ground Truth (GT) and other baseline models. The audio samples were generated using the Korean Universal Testset, covering Clean, Noisy, and Numeric conditions.
+          </p>
+        </div>
+
+        <h3 class="title is-4">Clean Data Samples</h3>
+        <div class="table-container">
+          <table class="table is-bordered is-narrow is-hoverable is-fullwidth demo-table" id="korean-universal-testset-clean-table">
+            <thead>
+              <tr>
+                <th>Audio Prompt</th>
+                <th>Text Prompt</th>
+                <th>GT</th>
+                <th>PEFT-TTS<br>(Ours)</th>
+                <th>XTTS</th>
+                <th>CosyVoice2</th>
+                <th>Llasa</th>
+                <th>Zonos</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/REF/5049_G1A5E7_LSK_003764.wav" type="audio/wav"></audio></td>
+                <td>폭풍우, 뇌우, 강풍과 집중 호우를 동반하는 악기상이 발생한다.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/GT/5049_G1A5E7_LSK_003764.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/N14/5049_G1A5E7_LSK_003764.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Xtts_v2/5049_G1A5E7_LSK_003764.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/CosyVoice2/5049_G1A5E7_LSK_003764.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Llasa/5049_G1A5E7_LSK_003764.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Zonos/5049_G1A5E7_LSK_003764.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/REF/5053_G2A1E7_KMJ_004511.wav" type="audio/wav"></audio></td>
+                <td>미국 진보 진영은 앞으로 더 큰 대법원발 쇼크가 다가올까 숨죽이고 있다.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/GT/5053_G2A1E7_KMJ_004511.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/N14/5053_G2A1E7_KMJ_004511.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Xtts_v2/5053_G2A1E7_KMJ_004511.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/CosyVoice2/5053_G2A1E7_KMJ_004511.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Llasa/5053_G2A1E7_KMJ_004511.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Zonos/5053_G2A1E7_KMJ_004511.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/REF/5092_G1A3E7_PSH_003163.wav" type="audio/wav"></audio></td>
+                <td>지나친 자치분권으로 행여 국가경쟁력이 떨어지지는 않을까 하는 걱정이라고 했다.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/GT/5092_G1A3E7_PSH_003163.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/N14/5092_G1A3E7_PSH_003163.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Xtts_v2/5092_G1A3E7_PSH_003163.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/CosyVoice2/5092_G1A3E7_PSH_003163.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Llasa/5092_G1A3E7_PSH_003163.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Zonos/5092_G1A3E7_PSH_003163.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/REF/5129_G1A3E7_YST_002840.wav" type="audio/wav"></audio></td>
+                <td>이후 중동 지역은 물론이고 유럽과 서아시아 등에서 잔혹한 테러가 끊이질 않았다.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/GT/5129_G1A3E7_YST_002840.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/N14/5129_G1A3E7_YST_002840.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Xtts_v2/5129_G1A3E7_YST_002840.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/CosyVoice2/5129_G1A3E7_YST_002840.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Llasa/5129_G1A3E7_YST_002840.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Zonos/5129_G1A3E7_YST_002840.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/REF/5253_G1A6E7_KSM_004633.wav" type="audio/wav"></audio></td>
+                <td>작은 실수라도 대형사고로 이어질 수 있는 위험한 작업이기 때문에 아무나 할 수 없다.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/GT/5253_G1A6E7_KSM_004633.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/N14/5253_G1A6E7_KSM_004633.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Xtts_v2/5253_G1A6E7_KSM_004633.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/CosyVoice2/5253_G1A6E7_KSM_004633.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Llasa/5253_G1A6E7_KSM_004633.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Zonos/5253_G1A6E7_KSM_004633.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/REF/5411_G1A2E7_KYJ_004782.wav" type="audio/wav"></audio></td>
+                <td>이번 달에 신용 카드로 전화 요금을 냈는데, 결국 갑한테 빌려서 을한테 갚는 격이죠.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/GT/5411_G1A2E7_KYJ_004782.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/N14/5411_G1A2E7_KYJ_004782.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Xtts_v2/5411_G1A2E7_KYJ_004782.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/CosyVoice2/5411_G1A2E7_KYJ_004782.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Llasa/5411_G1A2E7_KYJ_004782.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Zonos/5411_G1A2E7_KYJ_004782.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/REF/5479_G1A3E7_KGC_002019.wav" type="audio/wav"></audio></td>
+                <td>언젠가 어느 편인지 선택을 강요당하는 간어미중의 시간이 올 수도 있다.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/GT/5479_G1A3E7_KGC_002019.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/N14/5479_G1A3E7_KGC_002019.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Xtts_v2/5479_G1A3E7_KGC_002019.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/CosyVoice2/5479_G1A3E7_KGC_002019.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Llasa/5479_G1A3E7_KGC_002019.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Zonos/5479_G1A3E7_KGC_002019.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/REF/5861_G2A3E7_BES_001887.wav" type="audio/wav"></audio></td>
+                <td>그 사람은 차량 도난을 방지하기 위해 새로 산 자동차에 경보기를 부착했다.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/GT/5861_G2A3E7_BES_001887.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/N14/5861_G2A3E7_BES_001887.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Xtts_v2/5861_G2A3E7_BES_001887.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/CosyVoice2/5861_G2A3E7_BES_001887.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Llasa/5861_G2A3E7_BES_001887.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Zonos/5861_G2A3E7_BES_001887.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/REF/5942_G2A5E7_WSR_001746.wav" type="audio/wav"></audio></td>
+                <td>시사 문제에 대해 논리적으로 생각을 정리하는 습관을 들여 논술 시험에서 좋은 점수를 받았다.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/GT/5942_G2A5E7_WSR_001746.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/N14/5942_G2A5E7_WSR_001746.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Xtts_v2/5942_G2A5E7_WSR_001746.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/CosyVoice2/5942_G2A5E7_WSR_001746.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Llasa/5942_G2A5E7_WSR_001746.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Zonos/5942_G2A5E7_WSR_001746.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/REF/6005_G1A3E7_KJW_001686.wav" type="audio/wav"></audio></td>
+                <td>주택관리사도 취업난이라는데 소 소장은 적극적인 동문회 활동 덕분인지 금방 취업을 했다.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/GT/6005_G1A3E7_KJW_001686.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/N14/6005_G1A3E7_KJW_001686.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Xtts_v2/6005_G1A3E7_KJW_001686.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/CosyVoice2/6005_G1A3E7_KJW_001686.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Llasa/6005_G1A3E7_KJW_001686.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Clean/Zonos/6005_G1A3E7_KJW_001686.wav" type="audio/wav"></audio></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="title is-4">Noisy Data Samples</h3>
+        <div class="table-container">
+          <table class="table is-bordered is-narrow is-hoverable is-fullwidth demo-table" id="korean-universal-testset-noisy-table">
+            <thead>
+              <tr>
+                <th>Audio Prompt</th>
+                <th>Text Prompt</th>
+                <th>GT</th>
+                <th>PEFT-TTS<br>(Ours)</th>
+                <th>XTTS</th>
+                <th>CosyVoice2</th>
+                <th>Llasa</th>
+                <th>Zonos</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/REF/005_2.wav" type="audio/wav"></audio></td>
+                <td>지금 그렇게 대신 전 대통령 보다는 조금 더 나은 정책을 펼치지 않을까. 그렇게 파면당한 걸 봤으니까 그것보다 좀 잘하지 않을까 싶은 생각에.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/GT/005_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/N14/005_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Xtts_v2/005_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/CosyVoice2/005_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Llasa/005_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Zonos/005_2.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/REF/006_2.wav" type="audio/wav"></audio></td>
+                <td>좀 대한민국을 위한 사람이 나왔으면 좋겠고. 저는 살짝 윤석열 대통령</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/GT/006_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/N14/006_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Xtts_v2/006_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/CosyVoice2/006_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Llasa/006_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Zonos/006_2.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/REF/010_2.wav" type="audio/wav"></audio></td>
+                <td>뭔가 길거리에 쓰레기가 많다보니까, 길거리에 뭐 쓰레기 같은 거.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/GT/010_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/N14/010_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Xtts_v2/010_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/CosyVoice2/010_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Llasa/010_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Zonos/010_2.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/REF/016_2.wav" type="audio/wav"></audio></td>
+                <td>좋은 부분은 치안이나 이런 부분들이 그래도 잘 되어 있고. 국민적인 정서 자체가 일단 정을 중요하게 생각하다 보니까.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/GT/016_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/N14/016_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Xtts_v2/016_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/CosyVoice2/016_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Llasa/016_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Zonos/016_2.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/REF/017_2.wav" type="audio/wav"></audio></td>
+                <td>청소년 범죄를 최대한 막고, 그런 일이 일어나지 않도록 잘 법으로 엄격하게 처벌해야 된다고.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/GT/017_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/N14/017_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Xtts_v2/017_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/CosyVoice2/017_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Llasa/017_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Zonos/017_2.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/REF/018_2.wav" type="audio/wav"></audio></td>
+                <td>일단은 치안이 아무래도 다른 외국에 비해서 가장 내세울 수 있는 것 같고, 좀 안 좋은 점이라고 하면 아무래도 반도 다 보니까 성장이 좀 더딘 점? 뻗어 나가기 쉽지 않은 점?</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/GT/018_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/N14/018_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Xtts_v2/018_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/CosyVoice2/018_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Llasa/018_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Zonos/018_2.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/REF/021_2.wav" type="audio/wav"></audio></td>
+                <td>그게 젠더가 됐던 세대가 됐던 벌 차이가 없을텐데 너무 이렇게 남녀 더 나이 많고 노소 이렇게 나눠 놓은 게 그거는 진짜 좀 어떻게 바뀌어야 될 문제가 아닌가.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/GT/021_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/N14/021_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Xtts_v2/021_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/CosyVoice2/021_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Llasa/021_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Zonos/021_2.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/REF/022_2.wav" type="audio/wav"></audio></td>
+                <td>그때 예능 틀어져 있었는데 자막으로 비상계엄령 선포라고 해서 엄마가 설거지하고 계셨는데 집에 엄마가 있었거든요. 엄마한테 엄마가 비상계엄령이라는데? 하니까 엄마가 설거지하다가 뭐라는거야, 말이 되는 소리를 해. 이래가지고.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/GT/022_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/N14/022_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Xtts_v2/022_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/CosyVoice2/022_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Llasa/022_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Zonos/022_2.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/REF/023_2.wav" type="audio/wav"></audio></td>
+                <td>일단 저희가 뽑은 것도 있으니까 더 나쁘게 말하지는 못하겠는데, 그래도 갑자기 국가적으로 혼란을 주신 것도 있고 정치를 조금 제대로 못한 것도 없지 않나 있어서 더이상 높게 쳐다드릴 수는 없을 것 같아요.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/GT/023_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/N14/023_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Xtts_v2/023_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/CosyVoice2/023_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Llasa/023_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Zonos/023_2.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/REF/031_2.wav" type="audio/wav"></audio></td>
+                <td>앞으로는 더 올바른 삶을 살아야지 않을까.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/GT/031_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/N14/031_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Xtts_v2/031_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/CosyVoice2/031_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Llasa/031_2.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Noisy/Zonos/031_2.wav" type="audio/wav"></audio></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="title is-4">Numeric Data Samples</h3>
+        <div class="table-container">
+          <table class="table is-bordered is-narrow is-hoverable is-fullwidth demo-table" id="korean-universal-testset-numeric-table">
+            <thead>
+              <tr>
+                <th>Audio Prompt</th>
+                <th>Text Prompt</th>
+                <th>GT</th>
+                <th>PEFT-TTS<br>(Ours)</th>
+                <th>XTTS</th>
+                <th>CosyVoice2</th>
+                <th>Llasa</th>
+                <th>Zonos</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/REF/SPK014YTNSO122F004.wav" type="audio/wav"></audio></td>
+                <td>올해 신입생의 경우 입학금 인하분 13.4%와 국가장학금 지원액 3%를 합하면 지난해 신입생보다 입학금 부담이 46.4% 줄어듭니다.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/GT/SPK014YTNSO122F004.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/N14/SPK014YTNSO122F004.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Xtts_v2/SPK014YTNSO122F004.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/CosyVoice2/SPK014YTNSO122F004.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Llasa/SPK014YTNSO122F004.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Zonos/SPK014YTNSO122F004.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/REF/SPK016YTNSO033F005.wav" type="audio/wav"></audio></td>
+                <td>연세대 수시 미등록 인원은 297명으로 지난 학년도보다 15％ 줄었고 고려대는 190명으로 34% 늘었습니다.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/GT/SPK016YTNSO033F005.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/N14/SPK016YTNSO033F005.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Xtts_v2/SPK016YTNSO033F005.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/CosyVoice2/SPK016YTNSO033F005.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Llasa/SPK016YTNSO033F005.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Zonos/SPK016YTNSO033F005.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/REF/SPK023YTNSO591M005.wav" type="audio/wav"></audio></td>
+                <td>이는 하한의 경우 올해 최저임금 8천 590원보다 0.3% 높은 수준이고 상한은 6.1% 높은 수준입니다.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/GT/SPK023YTNSO591M005.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/N14/SPK023YTNSO591M005.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Xtts_v2/SPK023YTNSO591M005.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/CosyVoice2/SPK023YTNSO591M005.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Llasa/SPK023YTNSO591M005.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Zonos/SPK023YTNSO591M005.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/REF/SPK028YTNSO210F004.wav" type="audio/wav"></audio></td>
+                <td>현재 제주공항에는 10여 대의 제설 장비가 있는 것으로 알려졌는데, 13cm의 폭설로 42시간이나 활주로를 닫아야 했던 2년 전과 비교해 장비 보강은 미비한 실정입니다.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/GT/SPK028YTNSO210F004.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/N14/SPK028YTNSO210F004.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Xtts_v2/SPK028YTNSO210F004.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/CosyVoice2/SPK028YTNSO210F004.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Llasa/SPK028YTNSO210F004.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Zonos/SPK028YTNSO210F004.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/REF/SPK029YTNPO895M001.wav" type="audio/wav"></audio></td>
+                <td>정부가 2050 탄소중립 목표달성을 위해 2030년까지 온실가스 배출량을 2018년 대비 40% 감축하는 안을 제시했습니다.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/GT/SPK029YTNPO895M001.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/N14/SPK029YTNPO895M001.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Xtts_v2/SPK029YTNPO895M001.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/CosyVoice2/SPK029YTNPO895M001.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Llasa/SPK029YTNPO895M001.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Zonos/SPK029YTNPO895M001.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/REF/SPK030YTNSO901M003.wav" type="audio/wav"></audio></td>
+                <td>A씨는 지난 2018년 12월 대마와 엑스터시 등을 구매하려고 네 차례에 걸쳐 판매책에게 8만 원에서 50여만 원을 각각 송금한 혐의로 재판에 넘겨졌습니다.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/GT/SPK030YTNSO901M003.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/N14/SPK030YTNSO901M003.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Xtts_v2/SPK030YTNSO901M003.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/CosyVoice2/SPK030YTNSO901M003.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Llasa/SPK030YTNSO901M003.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Zonos/SPK030YTNSO901M003.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/REF/SPK032YTNLO650F006.wav" type="audio/wav"></audio></td>
+                <td>지자체가 6,577억 원으로 가장 많았고 공기업 4,635억 원, 준정부기관 2,115억 원 순이었습니다.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/GT/SPK032YTNLO650F006.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/N14/SPK032YTNLO650F006.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Xtts_v2/SPK032YTNLO650F006.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/CosyVoice2/SPK032YTNLO650F006.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Llasa/SPK032YTNLO650F006.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Zonos/SPK032YTNLO650F006.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/REF/SPK035KBSSO019F006.wav" type="audio/wav"></audio></td>
+                <td>이날은 검찰이 국가정보원으로부터 36억 5천만 원의 특수활동비를 상납받았다며 박 전 대통령을 뇌물수수와 국고손실 혐의로 추가 기소한 날입니다.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/GT/SPK035KBSSO019F006.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/N14/SPK035KBSSO019F006.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Xtts_v2/SPK035KBSSO019F006.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/CosyVoice2/SPK035KBSSO019F006.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Llasa/SPK035KBSSO019F006.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Zonos/SPK035KBSSO019F006.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/REF/SPK051YTNPO708M005.wav" type="audio/wav"></audio></td>
+                <td>26,000여 명의 회원이 참여한 설문조사도 발표했는데 정부가 관련 정책을 추진한다면 `전면적인 투쟁 선언과 전국적 집단행동`으로 대응해야 한다는 응답이 42.6%에 달했습니다.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/GT/SPK051YTNPO708M005.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/N14/SPK051YTNPO708M005.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Xtts_v2/SPK051YTNPO708M005.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/CosyVoice2/SPK051YTNPO708M005.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Llasa/SPK051YTNPO708M005.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Zonos/SPK051YTNPO708M005.wav" type="audio/wav"></audio></td>
+              </tr>
+              <tr>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/REF/SPK053YTNSO228F004.wav" type="audio/wav"></audio></td>
+                <td>또 강선이 들어가는 상부 판의 두께가 30cm로 얇아 철근을 보강하는 데 어려움이 있었습니다.</td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/GT/SPK053YTNSO228F004.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/N14/SPK053YTNSO228F004.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Xtts_v2/SPK053YTNSO228F004.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/CosyVoice2/SPK053YTNSO228F004.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Llasa/SPK053YTNSO228F004.wav" type="audio/wav"></audio></td>
+                <td><audio controls><source src="sample/audio/benchmarking/Numeric/Zonos/SPK053YTNSO228F004.wav" type="audio/wav"></audio></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<section class="section" id="ablation-details">
+  <div class="container is-max-desktop content">
+    <h2 class="title is-3 has-text-centered">Ablation Study</h2>
+    <p class="has-text-centered">
+      Explore how each component of the CoreaSpeech data pipeline influences the final speech synthesis quality. The image below summarizes the performance metrics. You'll find brief descriptions for each step, followed by a table with audio samples for you to listen to.
+    </p>
+
+    <figure style="text-align: center; margin-bottom: 30px;">
+      <img src="sample/images/ablation_pic.png" alt="Table 6: Ablation Study" style="width: 90%; max-width: 800px; border: 1px solid var(--border-color); border-radius: 8px; box-shadow: var(--shadow-md);">
+      <figcaption style="margin-top: 10px; font-style: italic; color: var(--text-light);">Performance Comparison across Pipeline Components</figcaption>
+    </figure>
+
+    <h3 class="title is-4 has-text-centered" style="margin-top: 40px;">Step Descriptions</h3>
+    <div>
+      <p><strong>Base:</strong> Raw data without any preprocessing or coreset selection.</p>
+      <p><strong>Base-diar.:</strong> Applied speaker diarization to the base data.</p>
+      <p><strong>Norm:</strong> Applied N2gk+ text normalization to Base-diar.</p>
+      <p><strong>Norm<sub>static</sub>:</strong> Applied static UTMOS filtering to Norm.</p>
+      <p><strong>Norm-app:</strong> Applied data appending to Norm (without static UTMOS).</p>
+      <p><strong>Core-app:</strong> Applied Jamo-based coreset selection and data appending to Norm.</p>
+      <p><strong>Core-app<sub>static</sub>:</strong> Applied static UTMOS filtering to Core-app.</p>
+      <p><strong>CoreaSpeech:</strong> All pipeline components applied, including dynamic UTMOS.</p>
+    </div>
+
+    <h3 class="title is-4 has-text-centered" style="margin-top: 40px; margin-bottom: 20px;">Audio Samples from Ablation Pipeline</h3>
+    <p class="has-text-centered" style="margin-bottom: 20px;">
+      Listen to how the audio quality evolves at each step of our data refinement pipeline.
+      The following table presents audio samples for representative Clean, Noisy, and Numeric prompts, processed through each ablation stage.
+    </p>
+    <div class="table-container">
+      <table class="table is-bordered is-narrow is-hoverable is-fullwidth demo-table" style="margin-bottom: 30px; table-layout: fixed;">
+        <thead>
+          <tr>
+            <th style="width: 8.77%;">Audio Prompt</th>
+            <th style="width: 12.80%;">Text Prompt</th>
+            <th style="width: 8.77%;">GT</th>
+            <th style="width: 8.77%;">Base</th>
+            <th style="width: 8.77%;">Base-diar.</th>
+            <th style="width: 8.77%;">Norm</th>
+            <th style="width: 8.77%;">Norm<sub>static</sub></th>
+            <th style="width: 8.77%;">Norm-app</th>
+            <th style="width: 8.77%;">Core-app</th>
+            <th style="width: 8.77%;">Core-app<sub>static</sub></th>
+            <th style="width: 8.77%;">CoreaSpeech</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><audio controls src="sample/audio/Ablation_Pipeline/REF/007_1.wav">Your browser does not support the audio element.</audio></td>
+            <td>저희 나라 경제 같은게 가장 중요한 문제라고 생각해서 근데 그런 점에서 가장 힘내 주셨으면 하는 바램이 있습니다.</td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/GT/007_2.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Base(N0)/007_2.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Base-diar(N1)/007_2.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm(N2)/007_2.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm_static(N3)/007_2.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm-app(N6)/007_2.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Core-app(N10)/007_2.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Core-app_static(N11)/007_2.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/CoreaSpeach(N14)/007_2.wav">Your browser does not support the audio element.</audio></td>
+          </tr>
+          <tr>
+            <td><audio controls src="sample/audio/Ablation_Pipeline/REF/021_1.wav">Your browser does not support the audio element.</audio></td>
+            <td>그게 젠더가 되었던 세대가 되었던 별 차이가 없을텐데 너무 이렇게 남 녀, 더 나이많고 노 소 이렇게 나누는 게 아 그거 진짜 좀 어떻게 바뀌어야 할 문제가 아닌가.</td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/GT/021_2.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Base(N0)/021_2.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Base-diar(N1)/021_2.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm(N2)/021_2.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm_static(N3)/021_2.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm-app(N6)/021_2.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Core-app(N10)/021_2.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Core-app_static(N11)/021_2.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/CoreaSpeach(N14)/021_2.wav">Your browser does not support the audio element.</audio></td>
+          </tr>
+          <tr>
+            <td><audio controls src="sample/audio/Ablation_Pipeline/REF/5196_G1A2E7_JTY_004489.wav">Your browser does not support the audio element.</audio></td>
+            <td>	
+방금 전 꺼진 안방 조명을 최대로 작동합니다.</td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/GT/5196_G1A2E7_JTY_004370.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Base(N0)/5196_G1A2E7_JTY_004370.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Base-diar(N1)/5196_G1A2E7_JTY_004370.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm(N2)/5196_G1A2E7_JTY_004370.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm_static(N3)/5196_G1A2E7_JTY_004370.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm-app(N6)/5196_G1A2E7_JTY_004370.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Core-app(N10)/5196_G1A2E7_JTY_004370.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Core-app_static(N11)/5196_G1A2E7_JTY_004370.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/CoreaSpeach(N14)/5196_G1A2E7_JTY_004370.wav">Your browser does not support the audio element.</audio></td>
+          </tr>
+          <tr>
+            <td><audio controls src="sample/audio/Ablation_Pipeline/REF/5338_G1A2E7_ADK_001406.wav">Your browser does not support the audio element.</audio></td>
+            <td>준비물은 줄넘기이며 편한 옷과 운동화를 착용해야 합니다</td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/GT/5338_G1A2E7_ADK_001597.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Base(N0)/5338_G1A2E7_ADK_001597.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Base-diar(N1)/5338_G1A2E7_ADK_001597.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm(N2)/5338_G1A2E7_ADK_001597.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm_static(N3)/5338_G1A2E7_ADK_001597.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm-app(N6)/5338_G1A2E7_ADK_001597.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Core-app(N10)/5338_G1A2E7_ADK_001597.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Core-app_static(N11)/5338_G1A2E7_ADK_001597.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/CoreaSpeach(N14)/5338_G1A2E7_ADK_001597.wav">Your browser does not support the audio element.</audio></td>
+          </tr>
+          <tr>
+            <td><audio controls src="sample/audio/Ablation_Pipeline/REF/5420_G2A5E7_PMJ_002867.wav">Your browser does not support the audio element.</audio></td>
+            <td>두 곳이 배우 주거지역 거주민들의 소비력을 간접적으로 볼 수 있는 집값은 매우 높이 뛰었다.</td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/GT/5420_G2A5E7_PMJ_003904.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Base(N0)/5420_G2A5E7_PMJ_003904.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Base-diar(N1)/5420_G2A5E7_PMJ_003904.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm(N2)/5420_G2A5E7_PMJ_003904.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm_static(N3)/5420_G2A5E7_PMJ_003904.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm-app(N6)/5420_G2A5E7_PMJ_003904.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Core-app(N10)/5420_G2A5E7_PMJ_003904.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Core-app_static(N11)/5420_G2A5E7_PMJ_003904.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/CoreaSpeach(N14)/5420_G2A5E7_PMJ_003904.wav">Your browser does not support the audio element.</audio></td>
+          </tr>
+          <tr>
+            <td><audio controls src="sample/audio/Ablation_Pipeline/REF/SPK011YTNPO482M001.wav">Your browser does not support the audio element.</audio></td>
+            <td>서울 에너지 공사는 어제 저녁 7시 반쯤 서울 노원구 하계동에 있는 600mm 열수송관이 파손됐다고 밝혔습니다. </td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/GT/SPK011YTNLO064M002.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Base(N0)/SPK011YTNLO064M002.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Base-diar(N1)/SPK011YTNLO064M002.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm(N2)/SPK011YTNLO064M002.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm_static(N3)/SPK011YTNLO064M002.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm-app(N6)/SPK011YTNLO064M002.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Core-app(N10)/SPK011YTNLO064M002.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Core-app_static(N11)/SPK011YTNLO064M002.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/CoreaSpeach(N14)/SPK011YTNLO064M002.wav">Your browser does not support the audio element.</audio></td>
+          </tr>
+          <tr>
+            <td><audio controls src="sample/audio/Ablation_Pipeline/REF/SPK030YTNSO905M002.wav">Your browser does not support the audio element.</audio></td>
+            <td>CCTV 확인결과 방문한 남성은 3명으로 새벽부터 오전까지 남성들이 잇다라 방문해 초인종을 누르는 행위에 놀란 주민이 경찰에 신고했습니다.</td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/GT/SPK030YTNSO903M004.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Base(N0)/SPK030YTNSO903M004.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Base-diar(N1)/SPK030YTNSO903M004.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm(N2)/SPK030YTNSO903M004.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm_static(N3)/SPK030YTNSO903M004.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm-app(N6)/SPK030YTNSO903M004.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Core-app(N10)/SPK030YTNSO903M004.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Core-app_static(N11)/SPK030YTNSO903M004.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/CoreaSpeach(N14)/SPK030YTNSO903M004.wav">Your browser does not support the audio element.</audio></td>
+          </tr>
+          <tr>
+            <td><audio controls src="sample/audio/Ablation_Pipeline/REF/SPK040SBSSP090F002.wav">Your browser does not support the audio element.</audio></td>
+            <td>정씨는 그제 31일 새벽 광주 북구 자신의 집에서 담뱃불을 이불에 비벼 끄다가 불을 내 4살과 2살짜리 두 아들과 15개월된 딸을 숨지게 한 혐의를 받고 있습니다.</td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/GT/SPK040KBSSO004F004.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Base(N0)/SPK040KBSSO004F004.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Base-diar(N1)/SPK040KBSSO004F004.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm(N2)/SPK040KBSSO004F004.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm_static(N3)/SPK040KBSSO004F004.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Norm-app(N6)/SPK040KBSSO004F004.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Core-app(N10)/SPK040KBSSO004F004.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/Core-app_static(N11)/SPK040KBSSO004F004.wav">Your browser does not support the audio element.</audio></td>
+          <td><audio controls src="sample/audio/Ablation_Pipeline/CoreaSpeach(N14)/SPK040KBSSO004F004.wav">Your browser does not support the audio element.</audio></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="content has-text-centered">
+    <p class="is-size-6">
+      &copy; 2025 CoreaSpeech Project. All Rights Reserved.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
+
