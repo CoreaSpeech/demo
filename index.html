@@ -246,8 +246,8 @@
     }
 
     .demo-table audio {
-      width: 100px;
-      height: 28px;
+      width: 100%;
+      height: 36px;
       border-radius: 4px;
       max-width: 100%;
     }
@@ -300,8 +300,8 @@
 
     @media (max-width: 1400px) {
       .demo-table audio {
-        width: 90px;
-        height: 26px;
+        width: 100%;
+        height: 32px;
       }
       .demo-table th, .demo-table td {
         padding: 0.4rem 0.2rem;
@@ -311,8 +311,8 @@
 
     @media (max-width: 1200px) {
       .demo-table audio {
-        width: 80px;
-        height: 24px;
+        width: 100%;
+        height: 30px;
       }
       .demo-table th, .demo-table td {
         padding: 0.3rem 0.15rem;
@@ -325,8 +325,8 @@
         overflow-x: scroll;
       }
       .demo-table audio {
-        width: 70px;
-        height: 22px;
+        width: 100%;
+        height: 28px;
       }
       .demo-table th, .demo-table td {
         padding: 0.25rem 0.1rem;
@@ -366,10 +366,10 @@
       width: 20%;
     }
     .diarization-pipeline-table th:nth-child(3), .diarization-pipeline-table td:nth-child(3) { /* Detected Speaker Count */
-      width: 25%; 
+      width: 35%; 
     }
     .diarization-pipeline-table th:nth-child(4), .diarization-pipeline-table td:nth-child(4) { /* Status */
-      width: 25%;
+      width: 15%;
     }
 
     /* UTMOS Table - matched to LNCat Text & Audio Sample */
@@ -383,10 +383,10 @@
       width: 20% !important;
     }
     .utmos-pipeline-table th:nth-child(3), .utmos-pipeline-table td:nth-child(3) { /* UTMOS Score */
-      width: 25% !important; 
+      width: 35% !important; 
     }
     .utmos-pipeline-table th:nth-child(4), .utmos-pipeline-table td:nth-child(4) { /* Status */
-      width: 25% !important;
+      width: 15% !important;
     }
 
     .pipeline-image, .model-image {
@@ -502,6 +502,38 @@
     #korean-universal-testset-numeric-table th:nth-child(4) {
       color: #3b82f6 !important; /* Blue color */
       font-weight: 700 !important; /* Bold */
+    }
+
+    /* Custom audio player size for Pipeline Stage Audio Examples tables */
+    .diarization-pipeline-table audio,
+    .lncat-table audio,
+    .utmos-pipeline-table audio {
+      width: 100%; /* Fill the cell width */
+      height: 36px; /* Increased height from 28px */
+    }
+
+    @media (max-width: 1400px) {
+      .diarization-pipeline-table audio,
+      .lncat-table audio,
+      .utmos-pipeline-table audio {
+        height: 32px; /* Increased height from 26px */
+      }
+    }
+
+    @media (max-width: 1200px) {
+      .diarization-pipeline-table audio,
+      .lncat-table audio,
+      .utmos-pipeline-table audio {
+        height: 30px; /* Increased height from 24px */
+      }
+    }
+
+    @media (max-width: 768px) {
+      .diarization-pipeline-table audio,
+      .lncat-table audio,
+      .utmos-pipeline-table audio {
+        height: 28px; /* Increased height from 22px */
+      }
     }
   </style>
 </head>
@@ -638,17 +670,17 @@
         <h3 class="title is-4">Duration Appending</h3>
         <div class="has-text-centered">
           <img src="./sample/images/durantion_appending.png" alt="Duration Appending Chart" class="pipeline-image">
-          <p class="is-size-6 has-text-grey">Comparison of utterance duration distribution before and after data appending.</p>
+          <p class="is-size-6 has-text-grey" style="font-style: italic;">Comparison of utterance duration distribution before and after data appending.</p>
         </div>
 
         <h3 class="title is-4">Semantic & Acoustic Diversity</h3>
         <div class="has-text-centered">
           <img src="./sample/images/Semantic_pca.png" alt="Semantic PCA" class="pipeline-image">
-          <p class="is-size-6 has-text-grey">Semantic PCA with frequency and projection (Raw, Core, Core-appended).</p>
+          <p class="is-size-6 has-text-grey" style="font-style: italic;">Semantic PCA with frequency and projection (Raw, Core, Core-appended).</p>
         </div>
         <div class="has-text-centered">
           <img src="./sample/images/Acoustic_pca.png" alt="Acoustic PCA" class="pipeline-image">
-          <p class="is-size-6 has-text-grey">Acoustic PCA with frequency and projection (Raw, Core, Core-appended).</p>
+          <p class="is-size-6 has-text-grey" style="font-style: italic;">Acoustic PCA with frequency and projection (Raw, Core, Core-appended).</p>
         </div>
       </div>
     </div>
@@ -671,7 +703,7 @@
 
         <div class="has-text-centered">
           <img src="./sample/images/Coreaspeech_pipeline.png" alt="CoreaSpeech Pipeline Overview" class="pipeline-image">
-          <p class="is-size-6 has-text-grey has-text-centered" style="margin-top: 0.5rem; margin-bottom: 2rem;">Overview of the CoreaSpeech data processing pipeline.</p>
+          <p class="is-size-6 has-text-grey has-text-centered" style="margin-top: 0.5rem; margin-bottom: 2rem; font-style: italic;">Overview of the CoreaSpeech data processing pipeline.</p>
         </div>
 
         <h3 class="title is-4">Key Stages</h3>
@@ -710,22 +742,22 @@
           <h5 class="subtitle is-5" style="margin-top: 1.5rem; margin-bottom: 1rem;"><strong>Audio Diarization Samples</strong></h5>
           <div class="table-container" style="margin-bottom: 1.5rem;">
             <table class="table is-bordered is-narrow is-hoverable is-fullwidth demo-table diarization-pipeline-table">
-              <thead>
-                <tr>
+                <thead>
+                  <tr>
                   <th>Text</th>
-                  <th>Audio Sample</th>
+                    <th>Audio Sample</th>
                   <th>Detected Speaker Count</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
                   <td>시간이 있을 때 낚시하러 자주가요.</td>
                   <td><audio controls src="sample/audio/Speaker Diarization/only_1_speaker/KO_B00000_S03161_W000004.mp3"></audio></td>
                   <td>1</td>
-                  <td><span class="status-selected">✓ Selected</span></td>
-                </tr>
-                <tr>
+                    <td><span class="status-selected">✓ Selected</span></td>
+                  </tr>
+                  <tr>
                   <td>저 하라고요? 유리? 유리 유리 유리 유리. 아 하고싶어요. 자 하나 둘 셋, 배고픔!</td>
                   <td><audio controls src="sample/audio/Speaker Diarization/over_1_speaker/KO_B00000_S01854_W000023.mp3"></audio></td>
                   <td>2</td>
@@ -867,7 +899,7 @@
 
         <div class="has-text-centered">
           <img src="./sample/images/PEFT_TTS_model.png" alt="PEFT-TTS Model Overview" class="model-image">
-          <p class="is-size-6 has-text-grey has-text-centered" style="margin-top: 0.5rem; margin-bottom: 2rem;">Overview of the PEFT-TTS model architecture.</p>
+          <p class="is-size-6 has-text-grey has-text-centered" style="margin-top: 0.5rem; margin-bottom: 2rem; font-style: italic;">Overview of the PEFT-TTS model architecture.</p>
         </div>
 
         <div class="content has-text-justified">
@@ -1313,7 +1345,7 @@
         <tbody>
           <tr>
             <td><audio controls src="sample/audio/Ablation_Pipeline/REF/007_1.wav">Your browser does not support the audio element.</audio></td>
-            <td>저희 나라 경제 같은게 가장 중요한 문제라고 생각해서 근데 그런 점에서 가장 힘내 주셨으면 하는 바램이 있습니다.</td>
+            <td>저희 나라 경제 같은게 가장 좀 문제라고 생각해서 근데 그런 점에서 가장 힘내 주셨으면 하는 바램이 있습니다.</td>
           <td><audio controls src="sample/audio/Ablation_Pipeline/GT/007_2.wav">Your browser does not support the audio element.</audio></td>
           <td><audio controls src="sample/audio/Ablation_Pipeline/Base(N0)/007_2.wav">Your browser does not support the audio element.</audio></td>
           <td><audio controls src="sample/audio/Ablation_Pipeline/Base-diar(N1)/007_2.wav">Your browser does not support the audio element.</audio></td>
